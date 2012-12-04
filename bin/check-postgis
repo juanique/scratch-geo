@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "SELECT PostGIS_full_version();" | sudo su - postgres -c psql
