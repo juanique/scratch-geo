@@ -1,0 +1,27 @@
+#!/bin/bash
+
+user=geoapp
+pass=geoapp
+db=geoapp
+
+sudo su - postgres -c "createdb $db"
+echo "CREATE USER geoapp PASSWORD '$pass'" | sudo su - postgres -c psql
+echo "GRANT ALL PRIVILEGES ON DATABASE $db TO $user;" | sudo su - postgres -c "psql $db"
+echo "CREATE EXTENSION postgis;" | sudo su - postgres -c "psql $db"
+echo "CREATE EXTENSION postgis_topology;" | sudo su - postgres -c "psql $db"
+
+pgconf=/etc/postgresql/9.1/main/pg_hba.conf
+conf="local    all             geoapp            trust"
+
+if grep -Fxq "$conf" $pgconf
+then
+    echo "Already had conf."
+else
+    sudo sh -c "echo '$conf' >> $pgconf"
+fi
+
+sudo /etc/init.d/postgresql restart
+
+echo "user: $user"
+echo "password: $pass"
+echo "db: $db"
